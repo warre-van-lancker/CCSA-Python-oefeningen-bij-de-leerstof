@@ -1,3 +1,3 @@
 
-def zoekBinair():
+def zoek_binair():
   pass
