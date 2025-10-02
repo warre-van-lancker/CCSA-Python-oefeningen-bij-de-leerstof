@@ -1,3 +1,2 @@
-
 def zoek_binair():
-  pass
+    pass
