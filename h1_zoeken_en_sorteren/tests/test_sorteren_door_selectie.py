@@ -1,50 +1,73 @@
 # h1_zoeken_en_sorteren/tests/test_sorteren_door_selectie.py
-import sys
-import subprocess
 import pytest
+from h1_zoeken_en_sorteren.sorteren_door_selectie import selection_sort_vooraan  # pad evt. aanpassen
 
-# PAS HIER AAN naar jouw modulepad (zonder .py):
-MODULE = "h1_zoeken_en_sorteren.sorteren_door_selectie"
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize("rij, expected_stdout", [
+    ([], ""),                 # n=0 -> geen prints
+    ([42], ""),               # n=1 -> geen prints
 
-def _run(stdin_text: str) -> list[str]:
-    """Voer het modulebestand uit als script en geef stdout-regels terug."""
-    proc = subprocess.run(
-        [sys.executable, "-m", MODULE],
-        input=stdin_text.encode(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=True,
-    )
-    return proc.stdout.decode().splitlines()
+    # Klein: al gesorteerd
+    ([1, 2, 3],
+     "[1, 2, 3]\n"
+     "[1, 2, 3]"),
 
-def _expected_selection_lines_from_input(stdin_text: str) -> list[str]:
-    """Bereken de verwachte tussenprints zoals jouw selection_sort_vooraan ze maakt."""
-    data = stdin_text.strip()
-    a = [int(x) for x in data.split()] if data else []
-    out = []
-    n = len(a)
-    for i in range(n - 1):
-        positie = i
-        m = a[i]
-        for j in range(i + 1, n, 1):
-            if a[j] < m:
-                positie = j
-                m = a[j]
-        a[positie] = a[i]
-        a[i] = m
-        out.append(str(a))
-    return out
+    # Klein: omgekeerd
+    ([3, 2, 1],
+     "[1, 2, 3]\n"
+     "[1, 2, 3]"),
 
-@pytest.mark.timeout(1)
-@pytest.mark.parametrize("stdin_text", [
-    "\n",                # leeg
-    "42\n",              # één element
-    "1 2 3\n",           # al gesorteerd
-    "3 2 1\n",           # omgekeerd
-    "2 1 2 1\n",         # dubbels
-    "44 55 12 42 94 18 6 67\n",  # jouw extra case
+    # Dubbels
+    ([2, 1, 2, 1],
+     "[1, 2, 2, 1]\n"
+     "[1, 1, 2, 2]\n"
+     "[1, 1, 2, 2]"),
+
+    # --- Dodona 0.in ---
+    ([44, 55, 12, 42, 94, 18, 6, 67],
+     "[6, 55, 12, 42, 94, 18, 44, 67]\n"
+     "[6, 12, 55, 42, 94, 18, 44, 67]\n"
+     "[6, 12, 18, 42, 94, 55, 44, 67]\n"
+     "[6, 12, 18, 42, 94, 55, 44, 67]\n"
+     "[6, 12, 18, 42, 44, 55, 94, 67]\n"
+     "[6, 12, 18, 42, 44, 55, 94, 67]\n"
+     "[6, 12, 18, 42, 44, 55, 67, 94]"),
+
+    # --- Dodona 1.in ---
+    ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+     "[1, 9, 8, 7, 6, 5, 4, 3, 2, 10]\n"
+     "[1, 2, 8, 7, 6, 5, 4, 3, 9, 10]\n"
+     "[1, 2, 3, 7, 6, 5, 4, 8, 9, 10]\n"
+     "[1, 2, 3, 4, 6, 5, 7, 8, 9, 10]\n"
+     "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n"
+     "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n"
+     "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n"
+     "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n"
+     "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"),
+
+    # --- Dodona 2.in ---
+    ([4, 5, 9, 8, 7, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600],
+     "[4, 5, 9, 8, 7, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600]\n"
+     "[4, 5, 9, 8, 7, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 12, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 46, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 59, 43, 56, 100, 48, 789, 23, 456, 89, 46, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 56, 100, 48, 789, 59, 456, 89, 46, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 56, 100, 48, 789, 59, 456, 89, 46, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 100, 48, 789, 59, 456, 89, 56, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 100, 789, 59, 456, 89, 56, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 789, 59, 456, 89, 100, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 789, 456, 89, 100, 77, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 456, 89, 100, 789, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 456, 100, 789, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 789, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 789, 600]\n"
+     "[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]"),
 ])
-def test_selection_sort_vooraan(stdin_text):
-    actual_lines = _run(stdin_text)
-    expected_lines = _expected_selection_lines_from_input(stdin_text)
-    assert actual_lines == expected_lines
+def test_selection_sort_vooraan_console_output(capsys, rij, expected_stdout):
+    selection_sort_vooraan(rij)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == expected_stdout.strip()

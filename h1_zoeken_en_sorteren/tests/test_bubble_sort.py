@@ -1,58 +1,71 @@
-# h1_zoeken_en_sorteren/tests/test_bubble_sort.py
-import sys
-import subprocess
 import pytest
+from h1_zoeken_en_sorteren.bubble_sort import bubble_sort  # pas dit pad aan indien nodig
 
-MODULE = "h1_zoeken_en_sorteren.bubble_sort"
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize("rij, expected_stdout", [
+    ([], 
+     "Voor een rij van lengte 0 werd het if-statement 0 keer uitgevoerd"),
+    ([42], 
+     "Voor een rij van lengte 1 werd het if-statement 0 keer uitgevoerd"),
+    ([1, 2, 3],
+     ("[1, 2, 3]\n"
+      "[1, 2, 3]\n"
+      "Voor een rij van lengte 3 werd het if-statement 3 keer uitgevoerd")),
+    ([3, 2, 1],
+     ("[1, 3, 2]\n"
+      "[1, 2, 3]\n"
+      "Voor een rij van lengte 3 werd het if-statement 3 keer uitgevoerd")),
+    ([2, 1, 2, 1],
+     ("[1, 2, 1, 2]\n"
+      "[1, 1, 2, 2]\n"
+      "[1, 1, 2, 2]\n"
+      "Voor een rij van lengte 4 werd het if-statement 6 keer uitgevoerd")),
+    ([44, 55, 12, 42, 94, 18, 6, 67],
+     ("[6, 44, 55, 12, 42, 94, 18, 67]\n"
+      "[6, 12, 44, 55, 18, 42, 94, 67]\n"
+      "[6, 12, 18, 44, 55, 42, 67, 94]\n"
+      "[6, 12, 18, 42, 44, 55, 67, 94]\n"
+      "[6, 12, 18, 42, 44, 55, 67, 94]\n"
+      "[6, 12, 18, 42, 44, 55, 67, 94]\n"
+      "[6, 12, 18, 42, 44, 55, 67, 94]\n"
+      "Voor een rij van lengte 8 werd het if-statement 28 keer uitgevoerd")),
 
-def _run(stdin_text: str) -> list[str]:
-    proc = subprocess.run(
-        [sys.executable, "-m", MODULE],
-        input=stdin_text.encode(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=True,
-    )
-    return proc.stdout.decode().splitlines()
-
-
-@pytest.mark.parametrize("stdin_text, expected_lines", [
-    ("\n", [
-        "Voor een rij van lengte 0 werd het if-statement 0 keer uitgevoerd"
-    ]),
-    ("42\n", [
-        "Voor een rij van lengte 1 werd het if-statement 0 keer uitgevoerd"
-    ]),
-    ("1 2 3\n", [
-        "[1, 2, 3]",
-        "[1, 2, 3]",
-        "Voor een rij van lengte 3 werd het if-statement 3 keer uitgevoerd"
-    ]),
-    ("3 2 1\n", [
-        "[1, 3, 2]",
-        "[1, 2, 3]",
-        "Voor een rij van lengte 3 werd het if-statement 3 keer uitgevoerd"
-    ]),
-    ("2 1 2 1\n", [
-        "[1, 2, 1, 2]",
-        "[1, 1, 2, 2]",
-        "[1, 1, 2, 2]",
-        "Voor een rij van lengte 4 werd het if-statement 6 keer uitgevoerd"
-    ]),
-    ("44 55 12 42 94 18 6 67\n", [
-        "[6, 44, 55, 12, 42, 94, 18, 67]",
-        "[6, 12, 44, 55, 18, 42, 94, 67]",
-        "[6, 12, 18, 44, 55, 42, 67, 94]",
-        "[6, 12, 18, 42, 44, 55, 67, 94]",
-        "[6, 12, 18, 42, 44, 55, 67, 94]",
-        "[6, 12, 18, 42, 44, 55, 67, 94]",
-        "[6, 12, 18, 42, 44, 55, 67, 94]",
-        "Voor een rij van lengte 8 werd het if-statement 28 keer uitgevoerd"
-    ]),
+  
+    ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+     r"""[1, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+[1, 2, 10, 9, 8, 7, 6, 5, 4, 3]
+[1, 2, 3, 10, 9, 8, 7, 6, 5, 4]
+[1, 2, 3, 4, 10, 9, 8, 7, 6, 5]
+[1, 2, 3, 4, 5, 10, 9, 8, 7, 6]
+[1, 2, 3, 4, 5, 6, 10, 9, 8, 7]
+[1, 2, 3, 4, 5, 6, 7, 10, 9, 8]
+[1, 2, 3, 4, 5, 6, 7, 8, 10, 9]
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+Voor een rij van lengte 10 werd het if-statement 45 keer uitgevoerd"""),
+    ([4, 5, 9, 8, 7, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 10, 77, 600],
+ r"""[4, 5, 7, 9, 8, 10, 12, 46, 59, 13, 43, 56, 100, 48, 789, 23, 456, 89, 77, 600]
+[4, 5, 7, 8, 9, 10, 12, 13, 46, 59, 23, 43, 56, 100, 48, 789, 77, 456, 89, 600]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 46, 59, 43, 48, 56, 100, 77, 789, 89, 456, 600]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 59, 48, 56, 77, 100, 89, 789, 456, 600]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 59, 56, 77, 89, 100, 456, 789, 600]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+[4, 5, 7, 8, 9, 10, 12, 13, 23, 43, 46, 48, 56, 59, 77, 89, 100, 456, 600, 789]
+Voor een rij van lengte 20 werd het if-statement 190 keer uitgevoerd"""),
 ])
 
-
-def test_bubble_sort_cases(stdin_text, expected_lines):
-    lines = _run(stdin_text)
-    assert lines == expected_lines
-
+def test_bubble_sort_console_output(capsys, rij, expected_stdout):
+    bubble_sort(rij)
+    captured = capsys.readouterr()
+    assert captured.out.strip() == expected_stdout.strip()

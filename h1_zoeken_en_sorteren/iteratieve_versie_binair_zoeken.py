@@ -1,2 +1,2 @@
-def zoek_binair():
+def zoek_binair(zoekItem,rij):
     pass
