@@ -1,6 +1,6 @@
 def bubble_sort(a):
     pass
 
-a = [int(_) for _ in input().split()]
-bubble_sort(a)
-
+if __name__ == "__main__":
+    a = [int(_) for _ in input().split()]
+    bubble_sort(a)
