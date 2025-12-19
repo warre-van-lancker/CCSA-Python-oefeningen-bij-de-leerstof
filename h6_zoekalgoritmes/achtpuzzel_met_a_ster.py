@@ -5,32 +5,41 @@ class AchtPuzzel:
              6 : {("B",3),("R",7)},   7 : {("B",4),("L",6),("R",8)},   8 : {("B",5),("L",7)} 
             }
 
-    def __init__(self, bord="123456780"):
-        pass
+    def __init__(self, bord : str ="123456780") -> None:
+        self.bord = bord.split("")
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.bord[:3] +  "\n" + self.bord[3:6] + "\n" + self.bord[6:]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"AchtPuzzel(bord='{self.bord}')"
 
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, AchtPuzzel):
             return self.bord == other.bord
         return False
 
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.bord)
 
     
-    def opvolgers(self):
-        pass
-    
+    def opvolgers(self) -> set:
+        opvolgers = set()
+        lege_index = self.bord.index('0')
+        for optie in self.BUREN[lege_index]:
+            nbord = AchtPuzzel("".join(self.bord))
+            nbord.bord[lege_index], nbord.bord[optie[1]] = nbord.bord[optie[1]], nbord.bord[lege_index]
+            opvolgers.add((nbord, optie[0]))
+
     def aantal_verkeerd(self, other):
-        pass
+        teller = 0
+        for index, getal in enumerate(self.bord):
+            if getal != 0 and getal != other.bord[index]:
+                teller += 1
+        return teller
 
     def manhattan_heuristiek(self, other):
         pass
